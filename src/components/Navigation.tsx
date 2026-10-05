@@ -1,21 +1,35 @@
+import type { Language } from '../content/languages'
+import { LanguageSwitcher } from './LanguageSwitcher'
+
 const links = [
-  ['mission', 'Mission'],
+  ['why', 'Why'],
   ['infrastructure', 'Infrastructure'],
   ['logic', 'Logic of Access'],
-  ['asset-keys', 'Asset Keys'],
-  ['impact-areas', 'Impact Areas'],
-  ['stewardship', 'Stewardship'],
-  ['blackprint', 'The Blackprint'],
+  ['playbook', 'Playbook'],
+  ['current-work', 'Current work'],
+  ['glossary', 'Glossary'],
 ]
 
-export function Navigation() {
+type Props = {
+  language: Language
+  onLanguageChange: (language: Language) => void
+}
+
+export function Navigation({ language, onLanguageChange }: Props) {
   return (
     <nav className="nav" aria-label="Primary">
-      <a className="nav__brand" href="#top">BDNA Legacy</a>
+      <a className="nav__brand" href="#top" aria-label="BDNA Legacy home">
+        <span className="nav__mark">BDNA</span>
+        <span className="nav__legacy">Legacy</span>
+      </a>
       <div className="nav__links">
         {links.map(([id, label]) => (
           <a key={id} href={`#${id}`}>{label}</a>
         ))}
+      </div>
+      <div className="nav__tools">
+        <LanguageSwitcher language={language} onChange={onLanguageChange} />
+        <a className="nav__cta" href="#entry-points">Enter the Blackprint</a>
       </div>
     </nav>
   )
