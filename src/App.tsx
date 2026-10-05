@@ -1,6 +1,11 @@
+import { useState } from 'react'
+import { CurrentWork } from './components/CurrentWork'
 import { Navigation } from './components/Navigation'
+import { ReferenceLayer } from './components/ReferenceLayer'
 import { Section } from './components/Section'
 import { blackprint } from './content/blackprint'
+import { publicOverview, type Language, uiCopy } from './content/languages'
+import { siteModules } from './content/modules'
 
 function PivotDiagram() {
   return (
@@ -24,13 +29,18 @@ function PivotDiagram() {
 }
 
 export default function App() {
+  const [language, setLanguage] = useState<Language>('en')
+  const overview = publicOverview[language]
+  const copy = uiCopy[language]
+
   return (
     <div className="site-shell">
+      <a className="skip-link" href="#main">Skip to content</a>
       <header id="top" className="hero">
-        <Navigation />
+        <Navigation language={language} onLanguageChange={setLanguage} />
         <div className="hero__grid">
           <div className="hero__copy">
-            <p className="eyebrow eyebrow--gold">{blackprint.identity.descriptor}</p>
+            <p className="eyebrow eyebrow--gold">{overview.descriptor}</p>
             <h1>
               Access is not the outcome.
               <span>It is the condition that makes outcomes possible.</span>
@@ -53,7 +63,25 @@ export default function App() {
         </div>
       </header>
 
-      <main>
+      <main id="main">
+        <section className="public-overview" aria-labelledby="public-overview-title">
+          <div className="section__inner public-overview__inner">
+            <div>
+              <p className="eyebrow">{copy.sourceStatus}</p>
+              <h2 id="public-overview-title">{copy.publicOverview}</h2>
+              <p className="public-overview__statement">{overview.statement}</p>
+              <p className="lead">{overview.body}</p>
+            </div>
+            <div className="public-overview__components">
+              <article><span>01</span><strong>{language === 'sv' ? 'Stiftelsen' : 'Foundation'}</strong><p>{overview.foundation}</p></article>
+              <article><span>02</span><strong>{language === 'sv' ? 'Fonden' : 'Fund'}</strong><p>{overview.fund}</p></article>
+              <article><span>03</span><strong>Asset Keys</strong><p>{overview.assetKeys}</p></article>
+              <article><span>04</span><strong>Fonio</strong><p>{overview.fonio}</p></article>
+            </div>
+            <p className="translation-note">{copy.translationNote}</p>
+          </div>
+        </section>
+
         <section id="entry-points" className="entry-points" aria-labelledby="entry-points-title">
           <div className="section__inner">
             <div className="entry-points__head">
@@ -127,26 +155,10 @@ export default function App() {
             </div>
             <PivotDiagram />
             <div className="logic-grid">
-              <article>
-                <span>01</span>
-                <h3>Life-world</h3>
-                <p>{blackprint.logicOfAccess.lifeWorld}</p>
-              </article>
-              <article>
-                <span>02</span>
-                <h3>Boundary</h3>
-                <p>{blackprint.logicOfAccess.boundary}</p>
-              </article>
-              <article>
-                <span>03</span>
-                <h3>Opportunity Loop</h3>
-                <p>{blackprint.logicOfAccess.opportunityLoop}</p>
-              </article>
-              <article>
-                <span>04</span>
-                <h3>Boundary permeability</h3>
-                <p>{blackprint.logicOfAccess.boundaryPermeability}</p>
-              </article>
+              <article><span>01</span><h3>Life-world</h3><p>{blackprint.logicOfAccess.lifeWorld}</p></article>
+              <article><span>02</span><h3>Boundary</h3><p>{blackprint.logicOfAccess.boundary}</p></article>
+              <article><span>03</span><h3>Opportunity Loop</h3><p>{blackprint.logicOfAccess.opportunityLoop}</p></article>
+              <article><span>04</span><h3>Boundary permeability</h3><p>{blackprint.logicOfAccess.boundaryPermeability}</p></article>
             </div>
             <div className="moral-anchor">
               <p className="eyebrow">Moral anchor</p>
@@ -158,28 +170,18 @@ export default function App() {
 
         <Section id="playbook" eyebrow="Chapter D · From theory to leverage" title="Asset Keys move the boundary. They do not move people.">
           <p className="lead">An Asset Key intervenes at a specific threshold where access is predictably blocked. Its responsibility ends at access. Once entry is possible, direction belongs to the individual.</p>
-
           <div className="wedge-flow">
             {blackprint.wedgeToPivot.map((step) => (
-              <article key={step.step}>
-                <span>{step.step}</span>
-                <h3>{step.name}</h3>
-                <p>{step.text}</p>
-              </article>
+              <article key={step.step}><span>{step.step}</span><h3>{step.name}</h3><p>{step.text}</p></article>
             ))}
           </div>
-
           <div className="principle-head">
             <p className="eyebrow">Asset Key design discipline</p>
             <h3>Shared logic constrains the intervention without prescribing its form.</h3>
           </div>
           <div className="principle-grid">
             {blackprint.assetKeyPrinciples.map((principle, index) => (
-              <article key={principle.name}>
-                <span>0{index + 1}</span>
-                <h3>{principle.name}</h3>
-                <p>{principle.text}</p>
-              </article>
+              <article key={principle.name}><span>0{index + 1}</span><h3>{principle.name}</h3><p>{principle.text}</p></article>
             ))}
           </div>
         </Section>
@@ -192,35 +194,22 @@ export default function App() {
               <p className="lead">{blackprint.impactAreaLogic}</p>
             </div>
             <div className="impact-orbit">
-              <div className="impact-orbit__core">
-                <span>Logic of Access</span>
-                <strong>Boundary permeability</strong>
-              </div>
+              <div className="impact-orbit__core"><span>Logic of Access</span><strong>Boundary permeability</strong></div>
               <div className="impact-orbit__areas">
-                {blackprint.impactAreas.map((area, index) => (
-                  <div key={area}><span>0{index + 1}</span>{area}</div>
-                ))}
+                {blackprint.impactAreas.map((area, index) => <div key={area}><span>0{index + 1}</span>{area}</div>)}
               </div>
             </div>
           </div>
         </section>
 
+        <CurrentWork />
+
         <Section id="participation" eyebrow="Participation without coercion" title="Freedom is preserved by just enough structure.">
           <div className="dual-panel">
-            <article>
-              <p className="eyebrow">Freedom within coherence</p>
-              <h3>No ideological entry fee.</h3>
-              <p>{blackprint.participation.freedom}</p>
-            </article>
-            <article>
-              <p className="eyebrow">Passing-forward logic</p>
-              <h3>Circulation without moral debt.</h3>
-              <p>{blackprint.participation.passingForward}</p>
-            </article>
+            <article><p className="eyebrow">Freedom within coherence</p><h3>No ideological entry fee.</h3><p>{blackprint.participation.freedom}</p></article>
+            <article><p className="eyebrow">Passing-forward logic</p><h3>Circulation without moral debt.</h3><p>{blackprint.participation.passingForward}</p></article>
           </div>
-          <blockquote>
-            <p>Contribution is decoupled from receipt. Access does not bind the person who receives it.</p>
-          </blockquote>
+          <blockquote><p>Contribution is decoupled from receipt. Access does not bind the person who receives it.</p></blockquote>
         </Section>
 
         <section id="evaluation" className="evaluation-section" aria-labelledby="evaluation-title">
@@ -229,18 +218,8 @@ export default function App() {
             <h2 id="evaluation-title">Did the boundary actually move?</h2>
             <p className="lead">{blackprint.evaluation.core}</p>
             <div className="evaluation-grid">
-              <article>
-                <p className="eyebrow">BDNA is responsible for</p>
-                <ul>
-                  {blackprint.evaluation.responsibleFor.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-              </article>
-              <article>
-                <p className="eyebrow">BDNA is not responsible for</p>
-                <ul>
-                  {blackprint.evaluation.notResponsibleFor.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-              </article>
+              <article><p className="eyebrow">BDNA is responsible for</p><ul>{blackprint.evaluation.responsibleFor.map((item) => <li key={item}>{item}</li>)}</ul></article>
+              <article><p className="eyebrow">BDNA is not responsible for</p><ul>{blackprint.evaluation.notResponsibleFor.map((item) => <li key={item}>{item}</li>)}</ul></article>
             </div>
             <p className="evaluation-note">{blackprint.evaluation.learning}</p>
           </div>
@@ -248,10 +227,10 @@ export default function App() {
 
         <Section id="stewardship" eyebrow="Long-term logic" title="Stewardship is custodianship, not ownership.">
           <p className="lead">{blackprint.stewardship}</p>
-          <div className="stewardship-line">
-            <span>Mission</span><b>→</b><span>Logic</span><b>→</b><span>Boundaries</span><b>→</b><span>Learning</span><b>→</b><span>Passing forward</span>
-          </div>
+          <div className="stewardship-line"><span>Mission</span><b>→</b><span>Logic</span><b>→</b><span>Boundaries</span><b>→</b><span>Learning</span><b>→</b><span>Passing forward</span></div>
         </Section>
+
+        <ReferenceLayer />
 
         <section id="blackprint" className="blackprint-section" aria-labelledby="blackprint-title">
           <div className="section__inner blackprint-section__inner">
@@ -262,17 +241,23 @@ export default function App() {
             <div>
               <p className="lead">{blackprint.sourceNote}</p>
               <p className="source-meta">{blackprint.identity.source}</p>
-              <p className="source-meta">Working source architecture · public interface v0.2</p>
+              <p className="source-meta">Working source architecture · public interface v0.3</p>
             </div>
+          </div>
+          <div className="section__inner module-registry" aria-label="Public module source registry">
+            {siteModules.map((module) => (
+              <a href={`#${module.id}`} key={module.id}>
+                <span>{module.source}</span>
+                <strong>{module.label}</strong>
+                <p>{module.purpose}</p>
+              </a>
+            ))}
           </div>
         </section>
       </main>
 
       <footer className="footer">
-        <div className="footer__brand">
-          <strong>BDNA Legacy</strong>
-          <span>{blackprint.identity.descriptor}</span>
-        </div>
+        <div className="footer__brand"><strong>BDNA Legacy</strong><span>{overview.descriptor}</span></div>
         <a href="#top">Back to top ↑</a>
       </footer>
     </div>
